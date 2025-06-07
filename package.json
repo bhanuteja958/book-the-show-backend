@@ -1,11 +1,19 @@
 {
-  "name": "book-the-show-backend",
-  "version": "1.0.0",
-  "description": "Backend for a movie show booking app.",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Bhanu Teja",
-  "license": "ISC"
+    "name": "book-the-show-backend",
+    "version": "1.0.0",
+    "description": "Backend for a movie show booking app.",
+    "main": "dist/server.js",
+    "scripts": {
+        "watch": "tsc --watch",
+        "dev": "nodemon dist/server.js",
+        "build": "tsc",
+        "start": "node dist/server.js"
+    },
+    "author": "Bhanu Teja",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^9.1.2",
+        "nodemon": "^3.1.10",
+        "typescript": "^5.8.3"
+    }
 }

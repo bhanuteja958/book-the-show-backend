@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "module": "nodenext",
+        "rootDir": "./src",
+        "sourceMap": true,
+        "target": "es2020",
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
+        "removeComments": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist"]
+}
