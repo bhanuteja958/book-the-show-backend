@@ -1,0 +1,11 @@
+{
+  "name": "book-the-show-backend",
+  "version": "1.0.0",
+  "description": "Backend for a movie show booking app.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bhanu Teja",
+  "license": "ISC"
+}
