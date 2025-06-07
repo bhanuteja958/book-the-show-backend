@@ -12,12 +12,14 @@
     "author": "Bhanu Teja",
     "license": "ISC",
     "devDependencies": {
+        "@types/express": "^5.0.3",
         "concurrently": "^9.1.2",
         "nodemon": "^3.1.10",
         "prettier": "3.5.3",
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "dotenv": "^16.5.0"
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0"
     }
 }
