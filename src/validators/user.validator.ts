@@ -13,9 +13,20 @@ export const RegistrationPayloadSchema = z.object({
         .nonempty(),
 });
 
+export const LoginPayloadSchema = z.object({
+    email: z.string().email().nonempty().trim(),
+    password: z.string().min(8).max(30),
+});
+
 // exporting payload types
 export type RegistrationPayload = typeof RegistrationPayloadSchema._type;
+export type LoginPayload = typeof LoginPayloadSchema._type;
+
 export type ValidatedRegistrationPayload = SafeParseReturnType<
     unknown,
     z.infer<typeof RegistrationPayloadSchema>
+>;
+export type ValidatedLoginPayload = SafeParseReturnType<
+    unknown,
+    z.infer<typeof LoginPayloadSchema>
 >;

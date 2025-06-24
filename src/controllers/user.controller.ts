@@ -1,12 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 import {
+    LoginPayload,
+    LoginPayloadSchema,
     RegistrationPayload,
     RegistrationPayloadSchema,
+    ValidatedLoginPayload,
     ValidatedRegistrationPayload,
 } from "../validators/user.validator";
 import { HttpStatusCodes } from "../util/constants";
-import { hashPassword } from "../util/auth";
-import { checkIfUserAlreadExists, createUser } from "../services/user.service";
+import {
+    checkPasswordMatch,
+    generateAuthTokens,
+    hashPassword,
+} from "../util/auth";
+import {
+    checkIfUserAlreadExists,
+    createUser,
+    getUserDetailsByEmail,
+} from "../services/user.service";
+import { CreatUserPayload, UserDetails } from "../types/user";
+import { AuthTokens } from "../types/auth";
+import { createHash } from "crypto";
+import { storeRefreshToken } from "../services/auth.service";
 
 export const registerUser: ControllerFunction = async (
     req: Request,
@@ -45,7 +60,7 @@ export const registerUser: ControllerFunction = async (
             validationResult.data.password,
         );
 
-        const userDetails = {
+        const userDetails: CreatUserPayload = {
             fullName: validationResult.data.fullName,
             dateOfBirth: validationResult.data.dateOfBirth,
             mobile: validationResult.data.mobile,
@@ -67,6 +82,89 @@ export const registerUser: ControllerFunction = async (
         res.status(HttpStatusCodes.created).json({
             success: false,
             message: "Successfully Registered User",
+            data: {},
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const loginUser: ControllerFunction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const payload: LoginPayload = req.body;
+
+        const validationResult: ValidatedLoginPayload =
+            await LoginPayloadSchema.safeParseAsync(payload);
+
+        if (!validationResult.success) {
+            res.status(HttpStatusCodes.badRequest).json({
+                success: false,
+                message: "Invalid login payload",
+                data: {},
+            });
+            return;
+        }
+
+        const { email, password } = validationResult.data;
+
+        const userDetails: UserDetails | null =
+            await getUserDetailsByEmail(email);
+
+        if (!userDetails) {
+            res.status(HttpStatusCodes.notFound).json({
+                success: false,
+                message: "Invalid email/password",
+                data: {},
+            });
+            return;
+        }
+        const isMatchingStoredPassword = await checkPasswordMatch(
+            password,
+            userDetails.passwordHash,
+        );
+
+        if (!isMatchingStoredPassword) {
+            res.status(HttpStatusCodes.notFound).json({
+                success: false,
+                message: "Invalid email/password",
+                data: {},
+            });
+            return;
+        }
+
+        const tokens: AuthTokens = generateAuthTokens(userDetails.userId);
+
+        const refreshTokenHash = createHash("sha256")
+            .update(tokens.refreshToken)
+            .digest("base64");
+        const refreshTokenExpiresOn = new Date(
+            new Date().getTime() + 1 * 24 * 60 * 60 * 1000,
+        );
+
+        await storeRefreshToken(
+            userDetails.userId,
+            refreshTokenHash,
+            refreshTokenExpiresOn.toISOString(),
+        );
+
+        res.cookie("accessToken", tokens.accessToken, {
+            httpOnly: true,
+            sameSite: "none",
+            maxAge: 1 * 60 * 60 * 1000,
+        });
+        res.cookie("refreshToken", tokens.refreshToken, {
+            httpOnly: true,
+            sameSite: "none",
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(HttpStatusCodes.ok).json({
+            success: true,
+            message: "Successfully logged in",
             data: {},
         });
     } catch (error) {

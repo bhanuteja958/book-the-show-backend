@@ -1,10 +1,10 @@
 import { PoolClient, QueryResult } from "pg";
 import pool from "../config/db";
-import { User } from "../types/user";
+import { CreatUserPayload, UserDetails } from "../types/user";
 
-export const createUser: (userDetails: User) => Promise<string> = async (
-    userDetails: User,
-) => {
+export const createUser: (
+    userDetails: CreatUserPayload,
+) => Promise<string> = async (userDetails: CreatUserPayload) => {
     let connection: PoolClient | null = null;
     try {
         connection = await pool.connect();
@@ -44,5 +44,25 @@ export const checkIfUserAlreadExists: (
         throw error;
     } finally {
         connection?.release();
+    }
+};
+
+export const getUserDetailsByEmail: (
+    email: string,
+) => Promise<UserDetails | null> = async (email: string) => {
+    let connection: PoolClient | null = null;
+    try {
+        connection = await pool.connect();
+        const result: QueryResult<UserDetails> = await connection.query(
+            `SELECT user_id AS "userId", email, password_hash AS "passwordHash", date_of_birth AS "dateOfBirth", full_name AS "fullName", mobile from users where email = $1`,
+            [email],
+        );
+
+        if (result.rows.length > 0) {
+            return result.rows[0];
+        }
+        return null;
+    } catch (error) {
+        throw error;
     }
 };

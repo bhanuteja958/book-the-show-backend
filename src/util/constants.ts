@@ -8,5 +8,6 @@ export const enum HttpStatusCodes {
     created = 201,
     badRequest = 400,
     unAuthorized = 401,
+    notFound = 404,
     internalServerError = 500,
 }

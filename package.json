@@ -13,7 +13,9 @@
     "author": "Bhanu Teja",
     "license": "ISC",
     "devDependencies": {
+        "@types/cors": "^2.8.19",
         "@types/express": "^5.0.3",
+        "@types/jsonwebtoken": "^9.0.10",
         "@types/node": "^24.0.0",
         "@types/pg": "^8.15.4",
         "concurrently": "^9.1.2",
@@ -24,8 +26,10 @@
     },
     "dependencies": {
         "argon2": "^0.43.0",
+        "cors": "^2.8.5",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
         "pg": "^8.16.0",
         "winston": "^3.17.0",
         "winston-daily-rotate-file": "^5.0.0",
